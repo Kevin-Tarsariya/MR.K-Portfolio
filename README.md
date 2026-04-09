@@ -6,7 +6,7 @@ A fully responsive portfolio built using React, Tailwind CSS, and Framer Motion 
 
 ### Preview
 
-![Hero section](./public/mr-k-portfolio.vercel.app.png)
+![Hero section](./public/mr-k-portfolio.vercel.app_.png)
 
 ---
 
