@@ -4,6 +4,10 @@
 This portfolio showcases my projects, skills, and experience About
 A fully responsive portfolio built using React, Tailwind CSS, and Framer Motion featuring animations, project filtering, and resume download.
 
+### Preview
+
+![Hero section](./public/mr-k-portfolio.vercel.app.png)
+
 ---
 
 🔗 [Live Demo](https://mr-k-portfolio.vercel.app)
@@ -71,11 +75,6 @@ npm install
 
 # Start development server
 npm run dev
-
-### Preview
-
-![Hero section](./public//mr-k-portfolio.vercel.app_.png)
-
 
 📬 Contact Me
 📧 Email: kevintarsariya913@gmail.com 
