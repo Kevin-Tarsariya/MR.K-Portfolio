@@ -10,7 +10,6 @@ import Experience from './components/Experience';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
-import { personalInfo } from './data/personalInfo';
 
 function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
