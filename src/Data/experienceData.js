@@ -4,7 +4,7 @@ export const experiences = [
   {
     title: 'MERN Stack Developer Intern',
     company: 'Yesquest',
-    date: '01/01/2025 To 31/05/2026 - 6 months',
+    date: '01/12/2025 To 31/05/2026 - 6 months',
     description:
       'Worked on a full-stack Learning Management System (LMS) using MongoDB, Express.js, React.js, and Node.js. Developed responsive UI components, integrated REST APIs, and implemented authentication features.'
   }
