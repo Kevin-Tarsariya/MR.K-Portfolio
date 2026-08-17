@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mr-k-portfolio.vercel.app/sitemap.xml
