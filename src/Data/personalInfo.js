@@ -1,18 +1,25 @@
 export const personalInfo = {
   name: 'Kevin Tarsariya',
+
   roles: [
+    'Full Stack Developer',
     'MERN Stack Developer',
-    'React & Full Stack Engineer',
-    'Cloud Computing Enthusiast',
-    'Node.js & Backend Specialist'
+    'React & Node.js Developer',
+    'AWS Cloud Computing Enthusiast'
   ],
-  bio: 'Building modern web applications using MongoDB, Express, React, and Node.js. Passionate about creating fast, scalable, and user-friendly digital solutions.',
+
+  bio: 'MCA student specializing in Cloud Computing and a Full Stack Developer passionate about building responsive, scalable web applications and exploring cloud technologies using React, Node.js, Express.js, MongoDB, and AWS.',
+
   email: 'kevintarsariya913@gmail.com',
   location: 'Surat, Gujarat, India',
+
   about: {
-    long: 'I am a dedicated MERN Stack Developer currently pursuing my Master of Computer Applications (MCA) in Cloud Computing at MIT Art, Design and Technology University, with a completed Bachelor of Computer Applications (BCA) foundation. I specialize in architecting full-stack web applications using MongoDB, Express.js, React.js, and Node.js, combined with robust RESTful APIs and modern frontend design systems.',
-    passion: 'Beyond engineering core systems, I have a strong passion for designing polished user interfaces, exploring scalable cloud infrastructure, and developing impactful web applications and SaaS tools that solve real-world problems.'
+    long: 'I am Kevin Tarsariya, a Full Stack Developer currently pursuing a Master of Computer Applications (MCA) with a focus on Cloud Computing at MIT Art, Design and Technology University. Building on my Bachelor of Computer Applications (BCA) foundation, I develop modern web applications using React.js, Node.js, Express.js, MongoDB, and RESTful APIs. I am also exploring cloud computing and AWS services to build scalable, reliable, and high-performance applications.',
+
+    passion: 'I enjoy transforming ideas into practical digital experiences through clean code, modern UI/UX design, and scalable application architecture. I am passionate about full-stack development, AWS cloud infrastructure, backend engineering, and building innovative web applications and SaaS tools that solve real-world problems.'
+
   },
+
   social: {
     github: 'https://github.com/Kevin-Tarsariya',
     linkedin: 'https://linkedin.com/in/Kevin-Tarsariya'
