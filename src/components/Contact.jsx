@@ -2,8 +2,9 @@ import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 import SectionWrapper from './SectionWrapper';
-import { FaUser, FaEnvelope, FaComment, FaPaperPlane, FaMapMarkerAlt, FaPhone, FaGithub, FaLinkedin, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaComment, FaPaperPlane, FaMapMarkerAlt, FaGithub, FaLinkedin, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import { personalInfo } from '../Data/personalInfo';
+import TiltCard from './TiltCard';
 
 const Contact = () => {
   const formRef = useRef();
@@ -23,14 +24,19 @@ const Contact = () => {
     setError(null);
 
     try {
-      // EmailJS Configuration from environment variables (Vite syntax)
       const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
       const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
       const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
-      // Validate that environment variables are set
       if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
-        throw new Error('EmailJS configuration missing. Please check your .env file has VITE_ prefixes.');
+        // Fallback: If EmailJS credentials are not present in .env, open user's mail client directly
+        const subject = encodeURIComponent(`Portfolio Inquiry from ${formData.name}`);
+        const body = encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`);
+        window.location.href = `mailto:${personalInfo.email}?subject=${subject}&body=${body}`;
+        setSubmitted(true);
+        setFormData({ name: '', email: '', message: '' });
+        setTimeout(() => setSubmitted(false), 5000);
+        return;
       }
 
       await emailjs.sendForm(
@@ -42,12 +48,10 @@ const Contact = () => {
 
       setSubmitted(true);
       setFormData({ name: '', email: '', message: '' });
-      
-      // Hide success message after 5 seconds
       setTimeout(() => setSubmitted(false), 5000);
     } catch (err) {
       console.error('Failed to send message:', err);
-      setError('Failed to send message. Please try again or email directly.');
+      setError('Failed to send through automated service. Please send an email directly.');
     } finally {
       setLoading(false);
     }
@@ -56,161 +60,189 @@ const Contact = () => {
   const contactInfo = [
     { icon: FaEnvelope, label: 'Email', value: personalInfo.email, href: `mailto:${personalInfo.email}` },
     { icon: FaMapMarkerAlt, label: 'Location', value: personalInfo.location },
-    { icon: FaPhone, label: 'Phone', value: 'Available on Request' }
+    { icon: FaGithub, label: 'GitHub', value: 'Kevin-Tarsariya', href: personalInfo.social.github },
+    { icon: FaLinkedin, label: 'LinkedIn', value: 'Kevin Tarsariya', href: personalInfo.social.linkedin }
   ];
 
   return (
-    <SectionWrapper id="contact" className="relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-dark via-dark-100 to-dark" />
-      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[150px]" />
-      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-accent-cyan/5 rounded-full blur-[150px]" />
+    <SectionWrapper id="contact" className="relative overflow-hidden py-16 sm:py-24">
+      {/* Glow backgrounds */}
+      <div className="absolute top-1/4 -left-20 w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] bg-primary/10 rounded-full blur-[110px] sm:blur-[160px] pointer-events-none" />
+      <div className="absolute bottom-1/4 -right-20 w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] bg-accent-cyan/10 rounded-full blur-[110px] sm:blur-[160px] pointer-events-none" />
 
-      <div className="container-custom relative z-10">
-        <div className="text-center mb-16">
-          <motion.span initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-4 mx-auto w-fit">
+      <div className="container-custom relative z-10 px-4 sm:px-6">
+        {/* Section Header */}
+        <div className="section-header">
+          <div className="section-badge">
             Get In Touch
-          </motion.span>
-          <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} viewport={{ once: true }} className="section-title mx-auto">
-            Let's Connect
-          </motion.h2>
-          <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} viewport={{ once: true }} className="section-subtitle">
-            Have a project in mind? Let's create something amazing together
-          </motion.p>
+          </div>
+          <h2 className="section-title">
+            Let's Build Something Together
+          </h2>
+          <p className="section-subtitle">
+            Have a project in mind, an opportunity to discuss, or just want to say hi? Reach out anytime!
+          </p>
         </div>
 
-        <div className="grid lg:grid-cols-5 gap-8 lg:gap-12">
-          <motion.div initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} viewport={{ once: true }} className="lg:col-span-2 space-y-6">
-            <div className="glass-card-strong p-6 sm:p-8">
-              <h3 className="text-xl sm:text-2xl font-bold text-white mb-4">Contact Information</h3>
-              <p className="text-gray-400 mb-8 leading-relaxed text-sm sm:text-base">
-                I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-start">
+          {/* Contact Details Column */}
+          <div className="lg:col-span-5 space-y-4 sm:space-y-6">
+            <TiltCard maxTilt={4} className="glass-card-strong p-5 sm:p-7 md:p-8 border border-white/10">
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 sm:mb-3 tracking-tight">
+                Contact Information
+              </h3>
+              <p className="text-gray-300 text-xs sm:text-sm md:text-base leading-relaxed mb-5 sm:mb-6 font-normal">
+                I am actively seeking software development and MERN stack engineering opportunities. Feel free to connect via form or directly through socials.
               </p>
-              <div className="space-y-4">
-                {contactInfo.map((item, idx) => (
-                  <motion.div key={item.label} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.1 }} viewport={{ once: true }} className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                      <item.icon className="text-primary w-5 h-5" />
+
+              <div className="space-y-3 sm:space-y-4">
+                {contactInfo.map((item) => (
+                  <div key={item.label} className="flex items-center gap-3 sm:gap-3.5 p-2.5 sm:p-3 rounded-xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-colors">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center shrink-0">
+                      <item.icon className="text-primary-light w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </div>
-                    <div className="min-w-0">
-                      <p className="text-gray-400 text-sm">{item.label}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] sm:text-[11px] font-medium text-gray-400 uppercase tracking-wider">{item.label}</p>
                       {item.href ? (
-                        <a href={item.href} className="text-white font-medium hover:text-primary transition-colors text-sm sm:text-base break-all">{item.value}</a>
+                        <a
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-white hover:text-accent-cyan font-semibold text-xs sm:text-sm truncate block transition-colors"
+                        >
+                          {item.value}
+                        </a>
                       ) : (
-                        <p className="text-white font-medium text-sm sm:text-base">{item.value}</p>
+                        <p className="text-white font-semibold text-xs sm:text-sm truncate">{item.value}</p>
                       )}
                     </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} viewport={{ once: true }} className="glass-card p-6">
-              <p className="text-gray-400 text-sm mb-4">Follow me on social media</p>
-              <div className="flex gap-3">
-                <motion.a 
-                  href={personalInfo.social.github} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.1 }} 
-                  whileTap={{ scale: 0.9 }} 
-                  className="social-icon"
-                  aria-label="GitHub"
-                >
-                  <FaGithub className="w-5 h-5" />
-                </motion.a>
-                <motion.a 
-                  href={personalInfo.social.linkedin} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.1 }} 
-                  whileTap={{ scale: 0.9 }} 
-                  className="social-icon"
-                  aria-label="LinkedIn"
-                >
-                  <FaLinkedin className="w-5 h-5" />
-                </motion.a>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          <motion.div initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} viewport={{ once: true }} className="lg:col-span-3">
-            <form ref={formRef} onSubmit={handleSubmit} className="glass-card-strong p-6 sm:p-8 gradient-border">
-              <h3 className="text-xl sm:text-2xl font-bold text-white mb-6">Send a Message</h3>
-              <div className="space-y-5">
-                {[{ name: 'name', icon: FaUser, label: 'Your Name', type: 'text', placeholder: 'John Doe' }, { name: 'email', icon: FaEnvelope, label: 'Email Address', type: 'email', placeholder: 'hello@example.com' }].map((field) => (
-                  <div key={field.name}>
-                    <label className="block text-gray-300 text-sm font-medium mb-2">{field.label}</label>
-                    <div className="relative">
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center bg-dark-100 rounded-lg z-10">
-                        <field.icon className={`w-4 h-4 transition-colors ${focusedField === field.name ? 'text-primary' : 'text-gray-500'}`} />
-                      </div>
-                      <input type={field.type} name={field.name} value={formData[field.name]} onChange={handleChange} onFocus={() => setFocusedField(field.name)} onBlur={() => setFocusedField(null)} required className="input-field pl-12" placeholder={field.placeholder} disabled={loading} />
-                    </div>
                   </div>
                 ))}
+              </div>
+            </TiltCard>
+          </div>
+
+          {/* Contact Form Column */}
+          <div className="lg:col-span-7">
+            <TiltCard maxTilt={3} className="glass-card-strong p-5 sm:p-7 md:p-8 border border-white/10 gradient-border shadow-2xl">
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-5 sm:mb-6 tracking-tight">
+                Send a Direct Message
+              </h3>
+
+              <form ref={formRef} onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
                 <div>
-                  <label className="block text-gray-300 text-sm font-medium mb-2">Your Message</label>
+                  <label className="block text-gray-300 text-[11px] sm:text-xs font-semibold uppercase tracking-wider mb-1.5 sm:mb-2">
+                    Your Name
+                  </label>
                   <div className="relative">
-                    <div className="absolute left-3 top-4 w-7 h-7 flex items-center justify-center bg-dark-100 rounded-lg z-10">
-                      <FaComment className={`w-4 h-4 transition-colors ${focusedField === 'message' ? 'text-primary' : 'text-gray-500'}`} />
+                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
+                      <FaUser className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${focusedField === 'name' ? 'text-primary-light' : 'text-gray-500'}`} />
                     </div>
-                    <textarea name="message" value={formData.message} onChange={handleChange} onFocus={() => setFocusedField('message')} onBlur={() => setFocusedField(null)} required rows="4" className="input-field pl-12 pt-4 resize-none" placeholder="Tell me about your project..." disabled={loading} />
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      onFocus={() => setFocusedField('name')}
+                      onBlur={() => setFocusedField(null)}
+                      required
+                      placeholder="e.g. John Doe"
+                      disabled={loading}
+                      className="w-full pl-10 sm:pl-11 pr-4 py-3 sm:py-3.5 bg-dark-200/70 border border-white/10 rounded-xl text-white placeholder-gray-500 text-xs sm:text-sm focus:outline-none focus:border-primary/50 focus:bg-dark-100 transition-all"
+                    />
                   </div>
                 </div>
-                <motion.button 
-                  type="submit" 
-                  whileHover={{ scale: loading ? 1 : 1.02 }} 
-                  whileTap={{ scale: loading ? 1 : 0.98 }} 
+
+                <div>
+                  <label className="block text-gray-300 text-[11px] sm:text-xs font-semibold uppercase tracking-wider mb-1.5 sm:mb-2">
+                    Your Email Address
+                  </label>
+                  <div className="relative">
+                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
+                      <FaEnvelope className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${focusedField === 'email' ? 'text-primary-light' : 'text-gray-500'}`} />
+                    </div>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      onFocus={() => setFocusedField('email')}
+                      onBlur={() => setFocusedField(null)}
+                      required
+                      placeholder="e.g. john@example.com"
+                      disabled={loading}
+                      className="w-full pl-10 sm:pl-11 pr-4 py-3 sm:py-3.5 bg-dark-200/70 border border-white/10 rounded-xl text-white placeholder-gray-500 text-xs sm:text-sm focus:outline-none focus:border-primary/50 focus:bg-dark-100 transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 text-[11px] sm:text-xs font-semibold uppercase tracking-wider mb-1.5 sm:mb-2">
+                    Your Message
+                  </label>
+                  <div className="relative">
+                    <div className="absolute left-3.5 top-3.5 sm:top-4 text-gray-400">
+                      <FaComment className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${focusedField === 'message' ? 'text-primary-light' : 'text-gray-500'}`} />
+                    </div>
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      onFocus={() => setFocusedField('message')}
+                      onBlur={() => setFocusedField(null)}
+                      required
+                      rows="4"
+                      placeholder="Tell me about your project, idea, or questions..."
+                      disabled={loading}
+                      className="w-full pl-10 sm:pl-11 pr-4 py-3 sm:py-3.5 bg-dark-200/70 border border-white/10 rounded-xl text-white placeholder-gray-500 text-xs sm:text-sm focus:outline-none focus:border-primary/50 focus:bg-dark-100 transition-all resize-none"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
                   disabled={loading}
-                  className="w-full btn-primary flex items-center justify-center gap-2 py-3 sm:py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full btn-primary py-3 sm:py-3.5 px-6 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed font-medium text-xs sm:text-sm md:text-base shadow-lg shadow-primary/25 transition-transform active:scale-97"
                 >
                   {loading ? (
                     <>
-                      <span className="text-sm sm:text-base">Sending...</span>
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <span>Sending Message...</span>
+                      <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     </>
                   ) : (
                     <>
-                      <span className="text-sm sm:text-base">Send Message</span>
-                      <FaPaperPlane className="w-4 h-4" />
+                      <span>Send Message</span>
+                      <FaPaperPlane className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </>
                   )}
-                </motion.button>
-                
-                {/* Success Message */}
+                </button>
+
+                {/* Success feedback */}
                 {submitted && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: -10 }} 
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 flex items-center gap-3"
-                  >
-                    <FaCheckCircle className="w-5 h-5 text-green-400 shrink-0" />
+                  <div className="p-3.5 sm:p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-3">
+                    <FaCheckCircle className="text-emerald-400 w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
                     <div>
-                      <p className="text-green-400 font-medium">Message sent successfully!</p>
-                      <p className="text-green-400/70 text-sm">I'll get back to you soon.</p>
+                      <p className="text-emerald-400 font-semibold text-xs sm:text-sm">Message received!</p>
+                      <p className="text-emerald-400/80 text-[11px] sm:text-xs">Thank you for reaching out. I'll get back to you shortly.</p>
                     </div>
-                  </motion.div>
+                  </div>
                 )}
 
-                {/* Error Message */}
+                {/* Error feedback */}
                 {error && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: -10 }} 
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-center gap-3"
-                  >
-                    <FaExclamationCircle className="w-5 h-5 text-red-400 shrink-0" />
+                  <div className="p-3.5 sm:p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center gap-3">
+                    <FaExclamationCircle className="text-rose-400 w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
                     <div>
-                      <p className="text-red-400 font-medium">{error}</p>
-                      <p className="text-red-400/70 text-sm">Try emailing directly at {personalInfo.email}</p>
+                      <p className="text-rose-400 font-semibold text-xs sm:text-sm">{error}</p>
+                      <a href={`mailto:${personalInfo.email}`} className="text-rose-400/90 text-[11px] sm:text-xs underline">
+                        Click here to send direct email to {personalInfo.email}
+                      </a>
                     </div>
-                  </motion.div>
+                  </div>
                 )}
-              </div>
-            </form>
-          </motion.div>
+              </form>
+            </TiltCard>
+          </div>
         </div>
       </div>
     </SectionWrapper>

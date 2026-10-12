@@ -253,7 +253,3 @@ img {
   opacity: 1;
   transition: opacity 0.3s ease;
 }
-
-img[loading] {
-  opacity: 0;
-}

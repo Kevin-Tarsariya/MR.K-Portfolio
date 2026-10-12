@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FaBars, FaTimes } from 'react-icons/fa';
+import { motion } from 'framer-motion';
+import { FaBars, FaTimes, FaFileAlt } from 'react-icons/fa';
 import { useActiveSection } from '../hooks/useActiveSection';
+import Modern3DLogo from './Modern3DLogo';
 
 const navLinks = [
   { name: 'Home', href: 'home' },
@@ -14,122 +15,105 @@ const navLinks = [
 
 const Navbar = ({ isOpen, setIsOpen }) => {
   const [scrolled, setScrolled] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const activeSection = useActiveSection(navLinks.map(link => link.href));
+  const activeSection = useActiveSection(navLinks.map((link) => link.href));
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      setScrolled(currentScrollY > 50);
-      setIsVisible(currentScrollY < lastScrollY || currentScrollY < 100);
-      setLastScrollY(currentScrollY);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 30);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   const handleLinkClick = (href) => {
     setIsOpen(false);
     const element = document.getElementById(href);
-    if (element) element.scrollIntoView({ behavior: 'smooth' });
+    if (element) {
+      const navOffset = 75; // Height of fixed header
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+      const offsetPosition = elementPosition - navOffset;
+
+      window.scrollTo({
+        top: href === 'home' ? 0 : offsetPosition,
+        behavior: 'smooth'
+      });
+    }
   };
 
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: isVisible ? 0 : -100 }}
-      transition={{ duration: 0.3 }}
-      className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-        isOpen 
-          ? 'bg-dark' 
-          : scrolled 
-            ? 'bg-dark/80 backdrop-blur-xl shadow-lg shadow-black/10' 
-            : 'bg-transparent'
+    <header
+      className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${
+        scrolled 
+          ? 'py-3 bg-dark/85 backdrop-blur-xl border-b border-white/10 shadow-xl shadow-black/40' 
+          : 'py-5 bg-transparent'
       }`}
     >
-      <div className="container-custom py-4 flex justify-between items-center">
-        <motion.a href="#home" onClick={(e) => { e.preventDefault(); handleLinkClick('home'); }} whileHover={{ scale: 1.05 }} className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-          <span className="bg-gradient-to-r from-primary to-accent-cyan bg-clip-text text-transparent">Mr</span>
-          <span className="text-white">.</span>
-          <span className="text-primary">K</span>
-        </motion.a>
+      <div className="container-custom flex justify-between items-center">
+        {/* Brand Logo with 3D Emblem */}
+        <a 
+          href="#home" 
+          onClick={(e) => { e.preventDefault(); handleLinkClick('home'); }} 
+          className="focus:outline-none"
+        >
+          <Modern3DLogo size="md" />
+        </a>
 
-        <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <motion.button
-              key={link.name}
-              onClick={() => handleLinkClick(link.href)}
-              whileHover={{ y: -2 }}
-              className={`relative text-sm font-medium transition-colors px-1 ${activeSection === link.href ? 'text-primary' : 'text-gray-300 hover:text-white'}`}
-            >
-              {link.name}
-            </motion.button>
-          ))}
-        </div>
-
-        <motion.button onClick={() => setIsOpen(!isOpen)} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="md:hidden text-gray-300 hover:text-white focus:outline-none p-2 rounded-lg hover:bg-white/10 transition-colors">
-          <AnimatePresence mode="wait">
-            {isOpen ? (
-              <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                <FaTimes size={24} />
-              </motion.div>
-            ) : (
-              <motion.div key="open" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                <FaBars size={24} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.button>
-      </div>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden"
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              width: '100vw',
-              height: '100vh',
-              backgroundColor: '#0a0a0f',
-              zIndex: 9999
-            }}
-          >
-            <div className="absolute top-0 left-0 right-0 p-4 flex justify-end">
+        {/* Desktop Navigation Links with Smooth Active Pill */}
+        <nav className="hidden md:flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/[0.03] backdrop-blur-xl border border-white/10 shadow-inner">
+          {navLinks.map((link) => {
+            const isActive = activeSection === link.href;
+            return (
               <button
-                onClick={() => setIsOpen(false)}
-                className="text-gray-300 hover:text-white focus:outline-none p-2"
+                key={link.name}
+                onClick={() => handleLinkClick(link.href)}
+                className={`relative px-4 py-1.5 text-xs sm:text-sm font-semibold rounded-full transition-colors duration-200 cursor-pointer ${
+                  isActive 
+                    ? 'text-white' 
+                    : 'text-gray-400 hover:text-gray-100 hover:bg-white/[0.04]'
+                }`}
               >
-                <FaTimes size={28} />
+                {isActive && (
+                  <motion.div
+                    layoutId="activeNavIndicator"
+                    className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-primary-dark shadow-md shadow-primary/30 z-[-1]"
+                    transition={{ type: 'spring', stiffness: 350, damping: 28 }}
+                  />
+                )}
+                {link.name}
               </button>
-            </div>
-            <div className="flex flex-col items-center justify-center h-full px-6 py-20">
-              {navLinks.map((link) => (
-                <button
-                  key={link.name}
-                  onClick={() => handleLinkClick(link.href)}
-                  className={`text-xl sm:text-2xl font-medium py-4 px-6 rounded-xl transition-all w-full text-center ${
-                    activeSection === link.href
-                      ? 'text-primary bg-primary/10'
-                      : 'text-gray-300 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  {link.name}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.nav>
+            );
+          })}
+        </nav>
+
+        {/* Resume Button & Mobile Menu Toggle */}
+        <div className="flex items-center gap-3">
+          <a
+            href="/resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-white/[0.05] hover:bg-white/[0.1] border border-white/15 text-white transition-all shadow-md active:scale-95 cursor-pointer"
+          >
+            <FaFileAlt className="text-primary-light" />
+            <span>Resume</span>
+          </a>
+
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden text-gray-300 hover:text-white p-2.5 rounded-xl bg-white/[0.05] border border-white/10 focus:outline-none cursor-pointer"
+            aria-label="Toggle navigation menu"
+          >
+            {isOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
+          </button>
+        </div>
+      </div>
+    </header>
   );
 };
 
