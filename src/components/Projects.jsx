@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SectionWrapper from './SectionWrapper';
 import ProjectCard from './ProjectCard';
@@ -41,12 +41,12 @@ const Projects = () => {
   };
 
   return (
-    <SectionWrapper id="projects" className="relative overflow-hidden py-24">
+    <SectionWrapper id="projects" className="relative overflow-hidden py-16 sm:py-24">
       {/* Background radial glows */}
-      <div className="absolute top-1/4 right-0 w-[550px] h-[550px] bg-primary/10 rounded-full blur-[160px] pointer-events-none" />
-      <div className="absolute bottom-1/4 left-0 w-[550px] h-[550px] bg-accent-cyan/10 rounded-full blur-[160px] pointer-events-none" />
+      <div className="absolute top-1/4 right-0 w-[350px] sm:w-[550px] h-[350px] sm:h-[550px] bg-primary/10 rounded-full blur-[110px] sm:blur-[160px] pointer-events-none" />
+      <div className="absolute bottom-1/4 left-0 w-[350px] sm:w-[550px] h-[350px] sm:h-[550px] bg-accent-cyan/10 rounded-full blur-[110px] sm:blur-[160px] pointer-events-none" />
 
-      <div className="container-custom relative z-10">
+      <div className="container-custom relative z-10 px-4 sm:px-6">
         {/* Section Header */}
         <div className="section-header">
           <div className="section-badge">
@@ -61,12 +61,12 @@ const Projects = () => {
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex justify-center items-center gap-2 mb-12 flex-wrap">
+        <div className="flex justify-center items-center gap-2 mb-10 sm:mb-12 flex-wrap">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => handleFilterChange(cat)}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer ${
+              className={`px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer ${
                 activeFilter === cat
                   ? 'bg-gradient-to-r from-primary to-accent-cyan text-white shadow-lg shadow-primary/25'
                   : 'bg-dark-200/60 backdrop-blur-md text-gray-400 hover:text-white border border-white/5'
@@ -78,7 +78,7 @@ const Projects = () => {
         </div>
 
         {/* Projects Grid */}
-        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           <AnimatePresence mode="popLayout">
             {currentProjects.map((project, idx) => (
               <ProjectCard 
@@ -93,12 +93,12 @@ const Projects = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex flex-col items-center gap-3 mt-12">
+          <div className="flex flex-col items-center gap-3 mt-10 sm:mt-12">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => goToPage(currentPage - 1)}
                 disabled={currentPage === 1}
-                className={`p-2.5 rounded-xl border transition-all text-sm ${
+                className={`p-2 sm:p-2.5 rounded-xl border transition-all text-xs sm:text-sm ${
                   currentPage === 1
                     ? 'text-gray-600 border-white/5 cursor-not-allowed'
                     : 'text-white bg-dark-200/80 hover:bg-primary/20 border-white/10 hover:border-primary/40 cursor-pointer'
@@ -113,7 +113,7 @@ const Projects = () => {
                   <button
                     key={page}
                     onClick={() => goToPage(page)}
-                    className={`w-9 h-9 rounded-xl font-medium text-xs transition-all cursor-pointer ${
+                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl font-medium text-xs transition-all cursor-pointer ${
                       currentPage === page
                         ? 'bg-primary text-white shadow-md shadow-primary/30'
                         : 'text-gray-400 hover:text-white bg-dark-200/60 border border-white/5'
@@ -127,7 +127,7 @@ const Projects = () => {
               <button
                 onClick={() => goToPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className={`p-2.5 rounded-xl border transition-all text-sm ${
+                className={`p-2 sm:p-2.5 rounded-xl border transition-all text-xs sm:text-sm ${
                   currentPage === totalPages
                     ? 'text-gray-600 border-white/5 cursor-not-allowed'
                     : 'text-white bg-dark-200/80 hover:bg-primary/20 border-white/10 hover:border-primary/40 cursor-pointer'
@@ -137,7 +137,7 @@ const Projects = () => {
                 Next →
               </button>
             </div>
-            <p className="text-xs text-gray-400">
+            <p className="text-[11px] sm:text-xs text-gray-400">
               Showing {startIndex + 1}–{Math.min(endIndex, filteredProjects.length)} of {filteredProjects.length} items
             </p>
           </div>
@@ -163,24 +163,55 @@ const ProjectDetailModal = ({ project, onClose }) => {
   const [modalImgError, setModalImgError] = useState(false);
   const fallbackImage = '/mr-k-portfolio.vercel.app_.png';
 
+  // Prevent background scrolling while modal is open & add ESC key support
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-xl"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-5 md:p-6 bg-black/85 backdrop-blur-xl"
     >
       <motion.div
         initial={{ scale: 0.95, opacity: 0, y: 15 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0, y: 15 }}
-        transition={{ duration: 0.25 }}
+        transition={{ duration: 0.22 }}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-2xl bg-dark-100/95 border border-white/15 rounded-3xl overflow-hidden shadow-2xl shadow-primary/20 flex flex-col max-h-[90vh]"
+        className="relative w-full max-w-2xl bg-dark-100/98 border border-white/15 rounded-2xl sm:rounded-3xl shadow-2xl shadow-primary/25 flex flex-col max-h-[92vh] sm:max-h-[88vh] overflow-hidden"
       >
-        {/* Modal Header Preview */}
-        <div className="relative h-60 sm:h-72 w-full bg-dark-200 overflow-hidden shrink-0">
+        {/* Sticky Close Button on Mobile / Desktop */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-dark/90 hover:bg-dark text-white border border-white/20 hover:border-white/40 shadow-xl backdrop-blur-md transition-all active:scale-95 cursor-pointer z-30 focus:outline-none"
+          aria-label="Close modal"
+        >
+          <FaTimes size={16} />
+        </button>
+
+        {/* Modal Header Preview Image */}
+        <div className="relative h-44 sm:h-64 md:h-72 w-full bg-dark-200 overflow-hidden shrink-0">
           {!modalImgLoaded && !modalImgError && (
             <div className="absolute inset-0 bg-dark-300 animate-pulse" />
           )}
@@ -191,63 +222,54 @@ const ProjectDetailModal = ({ project, onClose }) => {
             onError={() => setModalImgError(true)}
             className={`w-full h-full object-cover object-top transition-opacity duration-300 ${modalImgLoaded ? 'opacity-100' : 'opacity-0'}`}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-dark-100 via-dark-100/40 to-transparent" />
-
-          {/* Close button */}
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2.5 rounded-full bg-dark/80 text-gray-300 hover:text-white border border-white/10 hover:border-white/20 backdrop-blur-md transition-all cursor-pointer z-10"
-            aria-label="Close modal"
-          >
-            <FaTimes size={16} />
-          </button>
+          <div className="absolute inset-0 bg-gradient-to-t from-dark-100 via-dark-100/30 to-transparent pointer-events-none" />
 
           {/* Category Badge */}
-          <div className="absolute bottom-4 left-6">
-            <span className="px-3.5 py-1 rounded-full bg-primary/30 border border-primary/40 backdrop-blur-md text-xs font-semibold text-white">
+          <div className="absolute bottom-3 left-4 sm:bottom-4 sm:left-6 z-10">
+            <span className="px-3 py-1 rounded-full bg-primary/30 border border-primary/40 backdrop-blur-md text-[11px] sm:text-xs font-semibold text-white shadow-md">
               {project.category}
             </span>
           </div>
         </div>
 
         {/* Modal Scrollable Body */}
-        <div className="p-6 sm:p-8 overflow-y-auto space-y-6 custom-scrollbar">
+        <div className="p-4 sm:p-6 md:p-8 overflow-y-auto space-y-4 sm:space-y-6">
           <div>
-            <h3 className="text-2xl sm:text-3xl font-extrabold text-white mb-3 tracking-tight">
+            <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-2 sm:mb-3 tracking-tight leading-snug">
               {project.title}
             </h3>
-            <p className="text-gray-300 text-sm sm:text-base leading-relaxed font-normal">
+            <p className="text-gray-300 text-xs sm:text-sm md:text-base leading-relaxed font-normal">
               {project.description}
             </p>
           </div>
 
           {/* Tech Stack */}
           <div>
-            <h4 className="text-xs uppercase tracking-wider text-gray-400 font-bold mb-3 flex items-center gap-2">
+            <h4 className="text-[11px] sm:text-xs uppercase tracking-wider text-gray-400 font-bold mb-2.5 sm:mb-3 flex items-center gap-2">
               <FaLayerGroup className="text-primary-light" />
               Technologies Used
             </h4>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {project.techStack.map((tech) => (
                 <span
                   key={tech}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.05] border border-white/10 text-xs font-medium text-gray-200"
+                  className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-white/[0.05] border border-white/10 text-[11px] sm:text-xs font-medium text-gray-200"
                 >
-                  <FaCheckCircle className="text-accent-cyan w-3 h-3" />
-                  {tech}
+                  <FaCheckCircle className="text-accent-cyan w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" />
+                  <span>{tech}</span>
                 </span>
               ))}
             </div>
           </div>
 
           {/* Action Links */}
-          <div className="pt-2 flex flex-wrap gap-3">
+          <div className="pt-2 flex flex-col sm:flex-row gap-2.5 sm:gap-3">
             {project.live && project.live !== '#' && (
               <a
                 href={project.live}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-primary text-sm py-3 px-6 flex items-center gap-2"
+                className="btn-primary text-xs sm:text-sm py-3 px-5 sm:px-6 flex items-center justify-center gap-2 text-center"
               >
                 <span>Live Demo</span>
                 <FaExternalLinkAlt size={12} />
@@ -258,9 +280,9 @@ const ProjectDetailModal = ({ project, onClose }) => {
                 href={project.github.frontend}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-secondary text-sm py-3 px-6 flex items-center gap-2 bg-white/[0.04]"
+                className="btn-secondary text-xs sm:text-sm py-3 px-5 sm:px-6 flex items-center justify-center gap-2 bg-white/[0.04] text-center"
               >
-                <FaGithub size={16} />
+                <FaGithub size={15} />
                 <span>Frontend Repo</span>
               </a>
             )}
@@ -269,9 +291,9 @@ const ProjectDetailModal = ({ project, onClose }) => {
                 href={project.github.backend}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-secondary text-sm py-3 px-6 flex items-center gap-2 bg-white/[0.04]"
+                className="btn-secondary text-xs sm:text-sm py-3 px-5 sm:px-6 flex items-center justify-center gap-2 bg-white/[0.04] text-center"
               >
-                <FaGithub size={16} />
+                <FaGithub size={15} />
                 <span>Backend Repo</span>
               </a>
             )}

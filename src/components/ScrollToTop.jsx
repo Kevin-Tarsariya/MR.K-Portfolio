@@ -9,7 +9,7 @@ const ScrollToTop = () => {
     const toggleVisibility = () => {
       setIsVisible(window.scrollY > 500);
     };
-    window.addEventListener('scroll', toggleVisibility);
+    window.addEventListener('scroll', toggleVisibility, { passive: true });
     return () => window.removeEventListener('scroll', toggleVisibility);
   }, []);
 
@@ -25,10 +25,12 @@ const ScrollToTop = () => {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
           whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 z-50 p-3 bg-primary rounded-full shadow-lg hover:bg-primary-dark transition-all"
+          className="fixed bottom-6 right-5 sm:bottom-8 sm:right-8 z-40 p-3 sm:p-3.5 bg-primary/90 hover:bg-primary text-white rounded-full shadow-xl shadow-primary/30 border border-white/15 backdrop-blur-md transition-all cursor-pointer"
+          aria-label="Scroll to top"
         >
-          <FaArrowUp className="text-white" size={20} />
+          <FaArrowUp size={16} />
         </motion.button>
       )}
     </AnimatePresence>
