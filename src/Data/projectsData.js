@@ -63,7 +63,7 @@ export const projectsData = [
       frontend: 'https://github.com/Kevin-Tarsariya/we-love-pdf.git',
       backend: ''
     },
-    live: 'https://we-love-pdf-delta.vercel.app'
+    live: 'https://we-love-pdf-com.vercel.app/'
   },
   {
     id: 5,
