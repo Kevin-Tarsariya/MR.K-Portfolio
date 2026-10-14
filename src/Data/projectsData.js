@@ -76,5 +76,45 @@ export const projectsData = [
       backend: ''
     },
     live: 'https://kworld-textutils.netlify.app/'
+  },
+  {
+    id: 7,
+    title: 'PulseTalk - Polished Real-Time Chat App',
+    category: 'Web',
+    description: 'Polished full-stack real-time chat application featuring instant messaging, responsive modern UI, Lucide icons, Express backend, and deployed on Render with Cloudflare CDN.',
+    techStack: ['React', 'Node.js', 'Express', 'Lucide', 'Cloudflare', 'Render'],
+    image: 'https://res.cloudinary.com/dd8btq4l2/image/upload/v1791987538/0e326a79-f9d3-4f88-8a31-2644881de2a4.png',
+    github: {
+      frontend: 'https://github.com/Kevin-Tarsariya/Pulsetalk-Frontend',
+      backend: 'https://github.com/Kevin-Tarsariya/Pulsetalk-Backend'
+    },
+    live: 'https://pulsetalk-frontend.onrender.com/'
+  },
+  {
+    id: 8,
+    title: 'We Love PDF - Comprehensive PDF Utility Platform',
+    category: 'Web',
+    description: 'Full-featured PDF processing suite supporting PDF merging, manipulation, conversions, background queues, and secure user management built with React, Express, MongoDB, and Redis/BullMQ.',
+    techStack: [
+      'React',
+      'TypeScript',
+      'Node.js',
+      'Express.js',
+      'MongoDB',
+      'Redis',
+      'BullMQ',
+      'pdf-lib',
+      'Redux Toolkit',
+      'Tailwind CSS',
+      'Framer Motion',
+      'Zod',
+      'JWT'
+    ],
+    image: 'https://res.cloudinary.com/dd8btq4l2/image/upload/v1791987698/99ea732e-43a5-467f-9e91-154de9ca329f.png',
+    github: {
+      frontend: 'https://github.com/Kevin-Tarsariya/we-love-pdf.git',
+      backend: ''
+    },
+    live: 'https://we-love-pdf-delta.vercel.app'
   }
 ];
